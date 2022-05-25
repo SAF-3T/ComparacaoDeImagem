@@ -15,22 +15,33 @@ app = FastAPI()
 #img2 = ('./image1.jpg')
 # img1 = resize(imga, (51, 50))
 # img2 = resize(imgb, (50, 50))
-# img2 = request.Request('https://backend-saf-api.azurewebsites.net/Img/imagem1.jpg')
 
 @app.post('/comparar/img1/img2')
-def comparar_imagens(nomeImg: str = Form(), img2: UploadFile = File()):
+def comparar_imagens():
     
-    binario1 = requests.get('https://backend-saf-api.azurewebsites.net/Img/'+nomeImg)
+    #Pega imagem da URL do swagger em binário
+    binario1 = requests.get('https://backend-saf-api.azurewebsites.net/Img/imagem1.jpg')
+    binario2 = requests.get('https://backend-saf-api.azurewebsites.net/Img/imagem2.jpg')
+    
+    #Converte a imagem de binário para as propriedades da imagem
     img1 = Image.open(BytesIO(binario1.content))
-    rzImg1 = img1.resize((50,50))
-    # rzImg2 = img2.resize((50,50))
-    # percentage = image_diff_percent(rzImg1, rzImg2)
-    #compatibilidade = 100 - percentage
+    img2 = Image.open(BytesIO(binario2.content))
     
-    #return {f'{compatibilidade:.2f}%'}
-    return {f'{nomeImg} e {img2}'}
-    # r2 = requests.get('https://backend-saf-api.azurewebsites.net/Img/imagem2.jpg')
-    # img2 = Image.open(BytesIO(r2.content))
+    #Formata as duas imagens para o mesmo tamanho 
+    rzImg1 = img1.resize((50,50))
+    rzImg2 = img2.resize((50,50))
+    
+    #Percentual de difença entre as duas imagens
+    percentage = image_diff_percent(rzImg1, rzImg2)
+    
+    #Formatação para semelhança das imagens em percentual 
+    compatibilidade = 100 - percentage
+    
+    return {f'{compatibilidade:.2f}%'}
+    
+
+    
+    
     
 # # Opens a image in RGB mode
 # im = Image.open(r"C:\Users\System-Pc\Desktop\ybear.jpg")
