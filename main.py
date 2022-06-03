@@ -1,10 +1,12 @@
 from ctypes import resize
-from fastapi import FastAPI, Form
-import matplotlib.pyplot as plt
+from fastapi import FastAPI, Form, File
+# import matplotlib.pyplot as plt
 from PIL import Image
 # import numpy as np
 from imgcompare.imgcompare import image_diff_percent
 import requests
+import io
+from starlette.responses import StreamingResponse
 from io import BytesIO
 
 app = FastAPI()
@@ -31,3 +33,13 @@ def comparar_imagens(nomeImg1: str = Form(), nomeImg2: str = Form()):
     compatibilidade = 100 - percentage
     
     return {f'{compatibilidade:.2f}%'}
+
+@app.post('/testeUpload')
+async def predict(img_bytes: bytes = File(...)):
+    img = io.BytesIO(img_bytes)
+    img.seek(0)
+
+    return StreamingResponse(
+        img,
+        media_type="image/jpg",
+    )
