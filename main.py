@@ -11,7 +11,7 @@ from io import BytesIO
 
 app = FastAPI()
 
-@app.post('/comparar/img1/img2')
+@app.post('/Comparar/File/Form')
 def comparar_imagens(nomeImg1: str = Form(), nomeImg2: str = Form()):
     
     #Pega imagem da URL do swagger em binário
@@ -34,12 +34,11 @@ def comparar_imagens(nomeImg1: str = Form(), nomeImg2: str = Form()):
     
     return {f'{compatibilidade:.2f}%'}
 
-@app.post('/testeUpload')
-async def predict(img_bytes: bytes = File(...)):
-    img = io.BytesIO(img_bytes)
-    img.seek(0)
+@app.post('/Comparar/Files')
+async def CompararFiles(img_bytes: bytes = File(...), img_bytes2: bytes = File(...)):
+    img1 = Image.open(BytesIO(img_bytes))
+    img2 = Image.open(BytesIO(img_bytes2))
+    
+    percentage = 100 - image_diff_percent(img1, img2)
 
-    return StreamingResponse(
-        img,
-        media_type="image/jpg",
-    )
+    return {percentage}
